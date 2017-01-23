@@ -14,45 +14,47 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 class WordAdapter extends ArrayAdapter<Word> {
-
-    private TextView miwokTextView;
-    private TextView defaultTextView;
-    private ImageView image;
-
     private int bgColor;
-    private LinearLayout rightLayout;
 
     WordAdapter(Context context, ArrayList<Word> words, int bgColor) {
         super(context, 0, words);
         this.bgColor = bgColor;
     }
 
+    private static class ViewHolder {
+        TextView miwokTextView;
+        TextView englishTextView;
+        ImageView iconImageView;
+        LinearLayout rightLayout;
+    }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-
         View listView = convertView;
         if (listView == null) {
             listView = LayoutInflater.from(parent.getContext()).inflate(R.layout.two_text_layout, parent, false);
+            ViewHolder viewHolder = new ViewHolder();
+            viewHolder.miwokTextView = (TextView) listView.findViewById(R.id.ttl_miwok_text);
+            viewHolder.englishTextView = (TextView) listView.findViewById(R.id.ttl_english_text);
+            viewHolder.iconImageView = (ImageView) listView.findViewById(R.id.ttl_image);
+            viewHolder.rightLayout = (LinearLayout) listView.findViewById(R.id.ttl_textView_layout);
+            listView.setTag(viewHolder);
         }
-        Word currentWord = getItem(position);
 
-        miwokTextView = (TextView) listView.findViewById(R.id.ttl_miwok_text);
-        defaultTextView = (TextView) listView.findViewById(R.id.ttl_english_text);
-        image = (ImageView) listView.findViewById(R.id.ttl_image);
-        rightLayout = (LinearLayout) listView.findViewById(R.id.ttl_textView_layout);
-        rightLayout.setBackgroundColor(ContextCompat.getColor(getContext(), bgColor));
+        Word currentWord = getItem(position);
+        ViewHolder holder = (ViewHolder) listView.getTag();
+        holder.rightLayout.setBackgroundColor(ContextCompat.getColor(getContext(), bgColor));
 
         assert currentWord != null;
-        miwokTextView.setText(currentWord.getMiwokTranslation());
-        defaultTextView.setText(currentWord.getDefaultTranslation());
+        holder.miwokTextView.setText(currentWord.getMiwokTranslation());
+        holder.englishTextView.setText(currentWord.getDefaultTranslation());
 
         if (currentWord.hasImage()) {
-            image.setImageResource(currentWord.getImageId());
-            image.setVisibility(View.VISIBLE);
+            holder.iconImageView.setImageResource(currentWord.getImageId());
+            holder.iconImageView.setVisibility(View.VISIBLE);
         } else {
-            image.setVisibility(View.GONE);
+            holder.iconImageView.setVisibility(View.GONE);
         }
 
         return listView;
